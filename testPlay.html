@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>OOXX小遊戲</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #board {
+      margin: 0 auto;
+      width: 300px;
+      height: 300px;
+      display: grid;
+      grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+      gap: 5px;
+    }
+    .cell {
+      background-color: #fff;
+      border: 1px solid #333;
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .cell:hover {
+      background-color: #e0e0e0;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 24px;
+    }
+    button {
+      margin-top: 10px;
+      font-size: 18px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>OOXX小遊戲</h1>
+  <div id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+  <div id="message"></div>
+  <button onclick="resetGame()">重新開始</button>
+
+  <script>
+    // 儲存棋盤狀態，初始皆為 null
+    let board = Array(9).fill(null);
+    // 設定初始玩家（O 優先）
+    let currentPlayer = "O";
+    let gameOver = false;
+
+    // 可能獲勝的組合
+    const winningCombos = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫排
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // 直排
+      [0, 4, 8], [2, 4, 6]             // 對角線
+    ];
+
+    // 取得所有格子及訊息區元素
+    const cells = document.querySelectorAll('.cell');
+    const messageDiv = document.getElementById("message");
+
+    // 檢查是否有玩家獲勝或平手
+    function checkWinner() {
+      for (let combo of winningCombos) {
+        const [a, b, c] = combo;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          return board[a];
+        }
+      }
+      return board.every(cell => cell !== null) ? '平手' : null;
+    }
+
+    // 處理格子點擊事件
+    function handleClick(e) {
+      const index = e.target.getAttribute('data-index');
+      if (gameOver || board[index]) return;
+
+      // 更新棋盤狀態及顯示
+      board[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      // 檢查比賽結果
+      let result = checkWinner();
+      if (result) {
+        gameOver = true;
+        messageDiv.textContent = (result === '平手') ? "平手!" : "玩家 " + currentPlayer + " 獲勝!";
+      } else {
+        // 交換玩家
+        currentPlayer = currentPlayer === "O" ? "X" : "O";
+        messageDiv.textContent = "輪到玩家 " + currentPlayer;
+      }
+    }
+
+    // 重置遊戲狀態
+    function resetGame() {
+      board = Array(9).fill(null);
+      currentPlayer = "O";
+    }
