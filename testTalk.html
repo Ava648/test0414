@@ -47,8 +47,8 @@
             const msg = `<b>${username.value}：</b> ${input.value}`;
             const div = document.createElement('div');
             div.innerHTML = msg;
-            messages.appendChild(div);
-            input.value = '';
+            messages.appendChild(div);//附加文字
+            input.value = '';//清空輸入框
             messages.scrollTop = messages.scrollHeight; // 自動捲到最下面
         }
     </script>
